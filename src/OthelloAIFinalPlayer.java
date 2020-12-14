@@ -28,11 +28,17 @@ public class OthelloAIFinalPlayer implements OthelloAI {
         return move;
     }
 
+    /**
+     * Enum class to track the player.
+     */
     public enum Player {
         BLACK,
         WHITE;
     }
 
+    /**
+     * Represents a Tree Node in MCTS.
+     */
     public class Node {
         OthelloGameState gameState;
         Node parent;
@@ -91,7 +97,11 @@ public class OthelloAIFinalPlayer implements OthelloAI {
 
     }
 
+    /**
+     * Implements the MCTS algorithm for finding the next move.
+     */
     public class Mcts {
+
         Player player;
         long maxExplorationTimeInMilliSecs;
 
@@ -122,7 +132,7 @@ public class OthelloAIFinalPlayer implements OthelloAI {
                 backpropogation(simulationStartNode, this.player == player);
                 totalIterations++;
             }
-            System.out.println("Total Iterations = " + totalIterations);
+            System.out.println("Total number of MCTS iterations = " + totalIterations);
             return getChildWithBestScore(root).getMove();
         }
 
@@ -158,7 +168,7 @@ public class OthelloAIFinalPlayer implements OthelloAI {
             return root.getChildren().stream().max(Comparator.comparing(n -> n.getWinScore())).get();
         }
 
-        public double uctValue(Node child, int parentVisits) {
+        private double uctValue(Node child, int parentVisits) {
             if (child.getVisitCount() == 0) {
                 return Integer.MAX_VALUE;
             }
@@ -192,22 +202,25 @@ public class OthelloAIFinalPlayer implements OthelloAI {
             Node tempNode = simulatedNode;
             while (tempNode != null) {
                 tempNode.addVisitCount(1);
-                if (win)
-                    tempNode.addWinScore(10);
+                if (win) {
+                    //TODO: Test with different scoring logic
+                    // (might be worth to take into account the point difference between the player)
+                    tempNode.addWinScore(10); // Adds a score of 10 if the player won
+                }
                 tempNode = tempNode.getParent();
             }
         }
 
         private List<OthelloMove> getAllPossiblesMoves(OthelloGameState state) {
-            List<OthelloMove> possiblesStates = new ArrayList();
+            List<OthelloMove> possiblesMoves = new ArrayList();
             for(int i = 0; i < 8; ++i) {
                 for(int j = 0; j < 8; ++j) {
                     if(state.isValidMove(i, j)) {
-                        possiblesStates.add(new OthelloMove(i,j));
+                        possiblesMoves.add(new OthelloMove(i,j));
                     }
                 }
             }
-            return possiblesStates;
+            return possiblesMoves;
         }
     }
 }
