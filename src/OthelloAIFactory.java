@@ -9,6 +9,9 @@
 // you'll supply the code (which will likely only be one line) to create it.
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class OthelloAIFactory
 {
 	public OthelloAI createOthelloAI()
@@ -18,11 +21,15 @@ public class OthelloAIFactory
 		// your line of code will be as simple as the example below, though
 		// you naturally should use the name of your OthelloAI class (including
 		// your student ID#), and call whatever constructor is appropriate.
-		//
 
 		// return new OthelloAI1234567();
 		//return null; 	//enables program to compile w/o an AI (2 humans can play, though)
 		//return new OthelloAIRandomPlayer();
 		return new OthelloAIFinalPlayer();
+	}
+
+	public Map<String, OthelloAI> createOthelloAIs() {
+		return Map.of("CPU1", new OthelloAIAlphaPlayer(),
+				"CPU2", new OthelloAIFinalPlayer());
 	}
 }

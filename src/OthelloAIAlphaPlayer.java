@@ -3,10 +3,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Final AI Player implementation using MCTS.
- */
-public class OthelloAIFinalPlayer implements OthelloAI {
+public class OthelloAIAlphaPlayer implements OthelloAI {
 
     Mcts mcts = null;
     @Override
@@ -45,6 +42,7 @@ public class OthelloAIFinalPlayer implements OthelloAI {
         Node parent;
         List<Node> children;
         OthelloMove move;
+        int depth;
 
         private int visits;
         private double winScore;
@@ -62,6 +60,7 @@ public class OthelloAIFinalPlayer implements OthelloAI {
             this.parent = parent;
             this.move = move;
             this.children = children;
+            this.depth = parent == null ? 1 : (parent.depth + 1);
         }
 
         public OthelloGameState getGameState() {
@@ -95,6 +94,9 @@ public class OthelloAIFinalPlayer implements OthelloAI {
         public void addWinScore(double winScore) {
             this.winScore += winScore;
         }
+        public int getDepth() {
+            return depth;
+        }
 
         @Override
         public String toString() {
@@ -107,9 +109,9 @@ public class OthelloAIFinalPlayer implements OthelloAI {
      * Implements the MCTS algorithm for finding the next move.
      */
     public class Mcts {
-
         Player player;
         long maxExplorationTimeInMilliSecs;
+        static final int MAX_DEPTH = 5;
 
         Mcts(Player player, long maxExplorationTimeInMilliSecs) {
             this.player = player;
@@ -139,13 +141,12 @@ public class OthelloAIFinalPlayer implements OthelloAI {
                 totalIterations++;
             }
             System.out.println("Total number of MCTS iterations = " + totalIterations);
-            //System.out.println("MCTS Tree = " + root);
             return getChildWithBestScore(root).getMove();
         }
 
         private Node selectNodeToExpand(Node rootNode) {
             Node node = rootNode;
-            while (!node.getChildren().isEmpty()) {
+            while (!node.getChildren().isEmpty() && node.depth < MAX_DEPTH) {
                 node = node.getChildren().stream()
                         .max(Comparator.comparing(c -> uctValue(c, rootNode.getVisits())))
                         .get();
@@ -231,3 +232,4 @@ public class OthelloAIFinalPlayer implements OthelloAI {
         }
     }
 }
+

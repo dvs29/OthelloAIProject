@@ -21,4 +21,9 @@ public class OthelloMove
 	{
 		return col;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("(%d, %d)", getRow(), getColumn());
+	}
 }
