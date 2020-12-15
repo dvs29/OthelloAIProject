@@ -29,7 +29,7 @@ public class OthelloAIFactory
 	}
 
 	public Map<String, OthelloAI> createOthelloAIs() {
-		return Map.of("CPU1", new OthelloAIAlphaPlayer(),
-				"CPU2", new OthelloAIFinalPlayer());
+		return Map.of("CPU1", new OthelloAIFinalPlayer(),
+				"CPU2", new OthelloAIBetaPlayer());
 	}
 }
