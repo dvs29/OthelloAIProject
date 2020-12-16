@@ -9,7 +9,6 @@
 // you'll supply the code (which will likely only be one line) to create it.
 
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class OthelloAIFactory
@@ -29,7 +28,7 @@ public class OthelloAIFactory
 	}
 
 	public Map<String, OthelloAI> createOthelloAIs() {
-		return Map.of("CPU1", new OthelloAIFinalPlayer(),
-				"CPU2", new OthelloAIBetaPlayer());
+		return Map.of("CPU1", new OthelloAI0757235(),
+				"CPU2", new OthelloAIGammaPlayer());
 	}
 }

@@ -18,10 +18,10 @@ public class OthelloAIBetaPlayer implements OthelloAI {
         }
         if(mcts == null) {
             Player player = state.isBlackTurn() ? Player.BLACK : Player.WHITE;
-            mcts = new Mcts(player, 4500);
+            mcts = new Mcts(player, 4900);
         }
         OthelloMove move = mcts.findNextMove(state);
-        System.out.println(String.format("Selecting next move as (%d, %d)", move.getRow(), move.getColumn()));
+        //System.out.println(String.format("Selecting next move as (%d, %d)", move.getRow(), move.getColumn()));
         System.out.println("Total time taken to choose move = " + (System.currentTimeMillis() - startTime) + " ms");
         return move;
     }
@@ -117,7 +117,7 @@ public class OthelloAIBetaPlayer implements OthelloAI {
 
         public OthelloMove findNextMove(OthelloGameState state) {
             long end = System.currentTimeMillis() + maxExplorationTimeInMilliSecs;
-            Node root = new Node(state.clone());
+            root = new Node(state.clone());
             int totalIterations = 0;
             while(System.currentTimeMillis() < end) {
 
@@ -138,30 +138,9 @@ public class OthelloAIBetaPlayer implements OthelloAI {
                 totalIterations++;
             }
             System.out.println("Total number of MCTS iterations = " + totalIterations);
+            System.out.println("Total number of root visits = " + root.getVisits());
             //System.out.println("MCTS Tree = " + root);
             return getChildWithBestScore(root).getMove();
-        }
-
-        private int getHashCode(OthelloGameState state) {
-            int[][] board = new int[8][8];
-            for(int i = 0; i < 8; ++i) {
-                for(int j = 0; j < 8; ++j) {
-                    switch (state.getCell(i, j)) {
-                        case NONE:
-                            board[i][j] = 0;
-                            break;
-                        case BLACK:
-                            board[i][j] = 1;
-                            break;
-                        case WHITE:
-                            board[i][j] = 2;
-                            break;
-                        default:
-                            // Not required to be handled.
-                    }
-                }
-            }
-            return Arrays.deepHashCode(board);
         }
 
         private Node selectNodeToExpand(Node rootNode) {

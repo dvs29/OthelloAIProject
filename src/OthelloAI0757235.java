@@ -1,11 +1,14 @@
 import java.util.*;
 
-public class OthelloAIGammaPlayer implements OthelloAI {
+/**
+ * AI Player implemented using MCTS (Monte Carlo Tree Search).
+ */
+public class OthelloAI0757235 implements OthelloAI {
     Mcts mcts = null;
 
     @Override
     public OthelloMove chooseMove(OthelloGameState state) {
-        long startTime = System.currentTimeMillis();
+        //long startTime = System.currentTimeMillis();
         if(state.gameIsOver()) {
             //System.out.println("Game is Over!!! Returning null");
             return null;
@@ -15,10 +18,9 @@ public class OthelloAIGammaPlayer implements OthelloAI {
             Player player = state.isBlackTurn() ? Player.BLACK : Player.WHITE;
             mcts = new Mcts(player, 4900);
         }
-        OthelloMove move = mcts.findNextMove(state);
-        System.out.println(String.format("Selecting next move as (%d, %d)", move.getRow(), move.getColumn()));
-        System.out.println("[OthelloAIGammaPlayer] Total time taken to choose move = " + (System.currentTimeMillis() - startTime) + " ms");
-        return move;
+        //System.out.println(String.format("Selecting next move as (%d, %d)", move.getRow(), move.getColumn()));
+        //System.out.println("Total time taken to choose move = " + (System.currentTimeMillis() - startTime) + " ms");
+        return mcts.findNextMove(state);
     }
 
     /**
@@ -110,7 +112,7 @@ public class OthelloAIGammaPlayer implements OthelloAI {
             long end = System.currentTimeMillis() + maxExplorationTimeInMilliSecs;
 
             root = getGameStateAsRootNode(state);
-            int totalIterations = 0;
+            //int totalIterations = 0;
             while(System.currentTimeMillis() < end) {
 
                 // Step 1: Selection
@@ -127,14 +129,14 @@ public class OthelloAIGammaPlayer implements OthelloAI {
 
                 // Step 4: Backpropagation
                 backpropogation(simulationStartNode, finalState);
-                totalIterations++;
+                //totalIterations++;
             }
-            System.out.println("[OthelloAIGammaPlayer] Total number of MCTS iterations = " + totalIterations);
-            //System.out.println("[OthelloAIGammaPlayer] Total number of root visits = " + root.getVisits());
+            //System.out.println("Total number of MCTS iterations = " + totalIterations);
+            //System.out.println("Total number of root visits = " + root.getVisits());
 
             //re-assign the root to the next move node
-            root = getChildWithBestScore(root);
-            root.setParent(null);
+            root = getBestChildForNextMove(root);
+            root.setParent(null); // remove reference of previous nodes
             return root.getMove();
         }
 
@@ -149,24 +151,8 @@ public class OthelloAIGammaPlayer implements OthelloAI {
             Optional<Node> existingNode = root.getChildren().stream()
                     .filter(n -> ZobristHashing.getHash(n.getGameState()) == hash).findFirst();
             if(existingNode.isPresent()) {
-//          // Test code to verify that hash matches the right game state.
-//                System.out.println("[Gamma] Found existing node with visits = " + existingNode.get().getVisits());
-//                boolean stateMatched = true;
-//                for(int i = 0; i < 8; ++i) {
-//                    for (int j = 0; j < 8; ++j) {
-//                        if(state.getCell(i, j) != existingNode.get().getGameState().getCell(i, j)) {
-//                            stateMatched = false;
-//                            System.out.println("!!! STATES DID NOT MATCH !!!!!!!!!");
-//                            System.exit(0);
-//                        }
-//                    }
-//                }
-//                if(stateMatched) {
-//                    System.out.println("FOUND MATCHING EXISTING NODE!!");
-//                }
                 Node newRoot = existingNode.get();
                 newRoot.setParent(null); // remove reference of previous nodes
-                //System.out.println("Existing node => children count = " + newRoot.getChildren().size());
                 return newRoot;
             }
             return new Node(state.clone());
@@ -199,12 +185,8 @@ public class OthelloAIGammaPlayer implements OthelloAI {
             });
         }
 
-        private Node getChildWithBestScore(Node root) {
-            for(Node node : root.getChildren()) {
-                System.out.println(
-                        String.format("[Gamma] %s => visits=%d, score=%.2f", node.getMove(), node.getVisits(), node.winScore));
-            }
-            return root.getChildren().stream().max(Comparator.comparing(n -> n.getWinScore())).get();
+        private Node getBestChildForNextMove(Node root) {
+            return root.getChildren().stream().max(Comparator.comparing(n -> n.getVisits())).get();
         }
 
         private double uctValue(Node child, int parentVisits) {
@@ -216,7 +198,6 @@ public class OthelloAIGammaPlayer implements OthelloAI {
         }
 
         private OthelloGameState simulateRandomGameplay(Node startNode) {
-            OthelloMove move = startNode.getMove();
             OthelloGameState clonedState = startNode.getGameState().clone();
 
             while(!clonedState.gameIsOver()) {
