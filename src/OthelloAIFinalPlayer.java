@@ -7,7 +7,7 @@ import java.util.Random;
  * Final AI Player implementation using MCTS.
  */
 public class OthelloAIFinalPlayer implements OthelloAI {
-
+//make mcts null
     Mcts mcts = null;
     @Override
     public OthelloMove chooseMove(OthelloGameState state) {
